@@ -1,0 +1,26 @@
+{
+  "name": "hospital-api",
+  "version": "1.0.0",
+  "description": "A basic api to track patients in the covid-19 pandemic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hospital",
+    "doctor",
+    "patient",
+    "register",
+    "authentication",
+    "jwt"
+  ],
+  "author": "arnavdesk",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.23",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0"
+  }
+}
