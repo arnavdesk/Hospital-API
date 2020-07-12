@@ -1,11 +1,12 @@
 const Doctor = require("../../models/doctor");
+const jwt = require("jsonwebtoken");
 
 module.exports.create = async function (request, response) {
     console.log(request.body);
     if (request.body["password"] != request.body["confirm-password"]) {
         console.log("password and confirm password not equal!");
-        return response.json(422,{
-            message:"Password and confirm-password not equal"
+        return response.json(422, {
+            message: "Password and confirm-password not equal"
         });
     }
 
@@ -34,4 +35,23 @@ module.exports.create = async function (request, response) {
         })
     }
 
+}
+
+
+module.exports.generateKey = function  (request, response) {
+    console.log(request);
+    if (request.user) {
+        return response.json(200, {
+            status :request.code,
+            message: "Sign in sucessful take the token and keep it safe",
+            data: {
+                token: jwt.sign(request.user.toJSON(), "codeial", { expiresIn: 100000 })
+            }
+        })
+    } else {
+        return response.json(500, {
+            status :request.code,
+            message: "Something's Not right"
+        });
+    }
 }
