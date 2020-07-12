@@ -39,7 +39,6 @@ module.exports.create = async function (request, response) {
 
 
 module.exports.generateKey = function  (request, response) {
-    console.log(request);
     if (request.user) {
         return response.json(200, {
             status :request.code,
