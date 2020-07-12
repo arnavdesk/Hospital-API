@@ -1,6 +1,5 @@
 const Patient = require("../../models/patient");
 const Report = require("../../models/report");
-const { find } = require("../../models/patient");
 const status = {
     N: "Negative",
     TQ: "Travelled-Quarantine",
@@ -101,11 +100,13 @@ module.exports.allReports = async function (request, response) {
             let reports = await Report.find({ patient: patient._id }, "status createdAt doctor -_id")
                 .sort("createdAt")
                 .populate("doctor", "name -_id");
+
+            
             return response.json(200, {
                 status: 200,
                 message: "All Reports",
                 data: {
-                    patient: {name:patient.name,phone_number:patient.phone_number},
+                    patient: { name: patient.name, phone_number: patient.phone_number },
                     reports: reports
                 }
             })
