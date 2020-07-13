@@ -16,6 +16,4 @@ router.post('/:id/create_report',passport.authenticate("jwt", {session:false, fa
 // route for viewing all reports of a patient
 router.get('/:id/all_reports',passport.authenticate("jwt", {session:false, failWithError:true}), customMiddleWare.handleError,patientsApi.allReports);
 
-
-
 module.exports = router;
