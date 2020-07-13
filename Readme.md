@@ -23,7 +23,7 @@ npm install
 npm start or node index.js
 ```
 ## How to use API (Understanding the end points)? (!!Important in understanding API)
-0. Base URL is : `http://localhost:8000/api/v1`
+#### Base URL is : `http://localhost:8000/api/v1`
 
 1. `/doctor/register` (POST) : Register a new doctor using 'name', 'username', 'password' and 'confirm-password' (all mandatory).<br>
    Example input : (send name, username, password and confirm-password) <br>
