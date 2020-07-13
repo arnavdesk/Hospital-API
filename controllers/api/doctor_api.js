@@ -23,7 +23,7 @@ module.exports.create = async function (request, response) {
                 status : 200,
                 message: "Registration Success",
                 data: {
-                    doctor: doctor
+                    doctor: {_id:doctor.id,name:doctor.name,username:doctor.username}
                 }
             })
         } else {

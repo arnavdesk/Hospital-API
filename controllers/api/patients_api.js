@@ -59,7 +59,7 @@ module.exports.createReport = async function (request, response) {
                     message: "Please enter the correct status"
                 })
             }
-            let report = await Report.create(request.body);
+            let report = await (await Report.create(request.body)).populate('doctor patient','name phone_number -_id').execPopulate();
             if (report) {
                 console.log(report);
                 patient.reports.push(report._id);
