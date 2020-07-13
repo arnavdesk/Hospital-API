@@ -14,7 +14,7 @@ router.post('/register', passport.authenticate("jwt", {session:false, failWithEr
 router.post('/:id/create_report',passport.authenticate("jwt", {session:false, failWithError:true}), customMiddleWare.handleError,patientsApi.createReport );
 
 // route for viewing all reports of a patient
-router.post('/:id/all_reports',patientsApi.allReports);
+router.get('/:id/all_reports',passport.authenticate("jwt", {session:false, failWithError:true}), customMiddleWare.handleError,patientsApi.allReports);
 
 
 
