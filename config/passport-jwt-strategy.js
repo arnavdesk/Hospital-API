@@ -5,12 +5,15 @@ const Doctor = require("../models/doctor");
 const { request } = require("express");
 
 
+
+// extract token from header
 let opts = {
     jwtFromRequest: extractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: "codeial"
 }
 
 
+// authenticate using jwt 
 passport.use(new jwtStrategy(opts, function (jwtPayload, done) {
 
     Doctor.findById(jwtPayload._id,"username name", function (err, doctor) {

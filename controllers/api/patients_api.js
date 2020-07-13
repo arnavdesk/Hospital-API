@@ -7,6 +7,8 @@ const status = {
     PA: "Positive-Admit"
 }
 
+// Create a patient record getting phone number and 
+// name only after authentication if patient already exist return patient
 module.exports.create = async function (request, response) {
     try {
         let patient = await Patient.findOne({ phone_number: request.body.phone_number }, "name phone_number");
@@ -40,6 +42,8 @@ module.exports.create = async function (request, response) {
 }
 
 
+
+// create a report for a patient by getting status.
 module.exports.createReport = async function (request, response) {
     const patient_id = request.params.id;
     try {
@@ -92,6 +96,7 @@ module.exports.createReport = async function (request, response) {
 
 }
 
+// generate all reports of a particular user by getting id
 module.exports.allReports = async function (request, response) {
     const patient_id = request.params.id;
     try {

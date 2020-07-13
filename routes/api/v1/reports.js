@@ -6,6 +6,7 @@ const customMiddleWare = require("../../../config/custom-middleware");
 
 const reportsApi = require("../../../controllers/api/reports_api");
 
+// Generate report by status
 router.get("/:status", passport.authenticate("jwt", {session:false, failWithError:true}), customMiddleWare.handleError, reportsApi.getReportsByStatus);
 
 module.exports = router;

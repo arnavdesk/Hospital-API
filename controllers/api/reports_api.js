@@ -7,6 +7,7 @@ const status = {
     PA: "Positive-Admit"
 }
 
+// Get all reports by status
 module.exports.getReportsByStatus = async function (request, response) {
     let stats = request.params.status;
 
