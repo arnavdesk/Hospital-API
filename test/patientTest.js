@@ -1,25 +1,31 @@
+// Set node evnironment as test.
 process.env.NODE_ENV = 'test';
 
+// Require models
 const Patient = require('../models/patient');
 const Doctor = require("../models/doctor");
+const Report = require('../models/report');
 
+// require all the dependencies for testing 
 const mongoose = require("mongoose");
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../index');
 const jwt = require("jsonwebtoken");
+
 const should = chai.should();
 chai.use(chaiHttp);
 
 describe('Patients', () => {
     let authToken = "";
-
+    let doctor = "";
     beforeEach((done) => {
         Patient.remove({}, (err) => {
         });
-
+        Report.remove({}, (err) => {
+        });
         Doctor.remove({}, (err) => {
-            let doctor = new Doctor({ name: "Dr. Dummy", username: "DummyDoc", password: "dummyPass", "confirm-password": "dummyPass" });
+            doctor = new Doctor({ name: "Dr. Dummy", username: "DummyDoc", password: "dummyPass", "confirm-password": "dummyPass" });
             doctor.save((err, doctor) => {
                 authToken = jwt.sign(doctor.toJSON(), "codeial", { expiresIn: 100000 })
                 done();
@@ -244,8 +250,55 @@ describe('Patients', () => {
                     .end((err, res) => {
                         // console.log(res.body);
                         res.should.have.status(200);
+                        res.body.should.have.property('status');
+                        res.body.should.have.property('message');
+                        res.body.should.have.property('data');
+                        res.body.status.should.be.eql(200);
+                        res.body.message.should.be.eql("All Reports");
+                        res.body.data.should.have.property("patient");
+                        res.body.data.should.have.property("reports");
+                        res.body.data.reports.should.be.a("array");
+                        res.body.data.patient.should.have.property("name");
+                        res.body.data.patient.should.have.property("phone_number");
+                        res.body.data.reports.should.be.a("array");
+                        res.body.data.reports.length.should.be.eql(0);
                         done();
                     });
+            });
+        });
+
+        it('it should send all reports of new patient which should contain 1 newly created report -> ALL REPORTS', (done) => {
+            let patient = new Patient({ phone_number: "9999999999", name: "New patient" });
+
+            patient.save((err, patient) => {
+                let report = new Report({ doctor: doctor._id, patient: patient._id, status: "Negative" });
+                report.save((err, report) => {
+                    console.log(report);
+                    // patient.reports.push(report._id);
+                    chai.request(server)
+                        .get('/api/v1/patients/' + patient.phone_number + '/all_reports')
+                        .end((err, res) => {
+                            // console.log(res.body);
+                            res.should.have.status(200);
+                            res.body.should.have.property('status');
+                            res.body.should.have.property('message');
+                            res.body.should.have.property('data');
+                            res.body.status.should.be.eql(200);
+                            res.body.message.should.be.eql("All Reports");
+                            res.body.data.should.have.property("patient");
+                            res.body.data.should.have.property("reports");
+                            res.body.data.reports.should.be.a("array");
+                            res.body.data.patient.should.have.property("name");
+                            res.body.data.patient.should.have.property("phone_number");
+                            res.body.data.reports.should.be.a("array");
+                            res.body.data.reports.length.should.be.eql(1);
+                            res.body.data.reports[0].should.have.property("doctor");
+                            res.body.data.reports[0].should.have.property("status");
+                            res.body.data.reports[0].status.should.be.eql("Negative");
+                            res.body.data.reports[0].should.have.property("createdAt");
+                            done();
+                        });
+                })
             });
         });
 
