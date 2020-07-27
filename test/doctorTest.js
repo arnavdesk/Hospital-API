@@ -1,13 +1,16 @@
+// Set node evnironment as test.
 process.env.NODE_ENV = 'test';
 
-let mongoose = require("mongoose");
-let Doctor = require('../models/doctor');
-let chai = require('chai');
-let chaiHttp = require('chai-http');
-let server = require('../index');
-let should = chai.should();
+// Require models
+const Doctor = require('../models/doctor');
 
+// require all the dependencies for testing 
+const mongoose = require("mongoose");
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const server = require('../index');
 
+const should = chai.should();
 chai.use(chaiHttp);
 
 describe('Doctor', () => {
@@ -84,9 +87,6 @@ describe('Doctor', () => {
 
     // All tests for login route
     describe('/doctor/login', () => {
-        const doctorIncorrect = {username: "DummyDoc", password: "dummyPass"}
-        const doctorWrongConfirmPass = { username: "DummyDoc", password: "dummyPass"}
-        const doctorCorrect = { username: "DummyDoc", password: "dummyPass"}
 
         // unable to login because of wrong username
         it('it should say authorization failed because wrong doctor username -> login doctor', (done) => {

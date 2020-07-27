@@ -1,15 +1,19 @@
+// Set node evnironment as test.
 process.env.NODE_ENV = 'test';
 
-let mongoose = require("mongoose");
-let Report = require('../models/report');
-let chai = require('chai');
-let chaiHttp = require('chai-http');
-let server = require('../index');
-let should = chai.should();
+// Require models
+const Report = require('../models/report');
 
+// require all the dependencies for testing 
+const mongoose = require("mongoose");
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const server = require('../index');
 
+const should = chai.should();
 chai.use(chaiHttp);
 
+// All the test for reports will go here
 describe('Reports', () => {
     beforeEach((done) => {
         Report.remove({}, (err) => {
