@@ -8,6 +8,7 @@ In a time where a major pandemic has covered all the world we need a system whic
 4. Generation of report(protecte by jwt) : A doctor has to enter enter the status for a particular patient and can generate the report according to it.
 5. View all reports of a patient(protected by jwt) : A doctor can view all the reports of a patient.
 6. View all the reports filtered by status(protected by jwt) : A doctor can view all reports present in database filtered by status.
+7. Unit testing integrated.
 
 ## How to install and run?
 1. Clone this project
@@ -22,6 +23,11 @@ cd Hospital-API
 npm install 
 npm start or node index.js
 ```
+## How to run Unit test and do API testing?
+1. Install Mocha(Testing enviornment used by Node.js) by running `sudo npm install --global mocha`
+2. Navigate to project directory and run `npm test`
+3. You'll be able to verify if the API is performing as intended.
+
 ## How to use API (Understanding the end points)? (!!Important in understanding API)
 #### Base URL : `http://localhost:8000/api/v1`
 #### End Points :
@@ -96,6 +102,7 @@ This code follows MVC pattern and hence everything is differentiated and well ma
 `/controller/api` - contains functions to connect to different end points of api. <br>
 `/model` - to store data in db we need models. <br>
 `/config` - contains config files for mongoose, passport or any other configs such as middlewares. <br>
+`/test` - contains files to test the code. <br>
 
 Feel free to use and contribute! :)
 
