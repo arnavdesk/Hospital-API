@@ -1,16 +1,14 @@
 process.env.NODE_ENV = 'test';
 
-const mongoose = require("mongoose");
 const Patient = require('../models/patient');
+const Doctor = require("../models/doctor");
 
+const mongoose = require("mongoose");
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../index');
-const Doctor = require("../models/doctor");
 const jwt = require("jsonwebtoken");
 const should = chai.should();
-
-
 chai.use(chaiHttp);
 
 describe('Patients', () => {
@@ -20,9 +18,9 @@ describe('Patients', () => {
         Patient.remove({}, (err) => {
         });
 
-        Doctor.remove({},(err)=>{
-            let doctor = new Doctor({name:"Dr. Dummy",username:"DummyDoc",password:"dummyPass","confirm-password":"dummyPass"});
-            doctor.save((err,doctor)=>{
+        Doctor.remove({}, (err) => {
+            let doctor = new Doctor({ name: "Dr. Dummy", username: "DummyDoc", password: "dummyPass", "confirm-password": "dummyPass" });
+            doctor.save((err, doctor) => {
                 authToken = jwt.sign(doctor.toJSON(), "codeial", { expiresIn: 100000 })
                 done();
             })
@@ -34,22 +32,25 @@ describe('Patients', () => {
 
     });
 
-    
-
-    console.log(authToken);
 
 
-    // Register patients auhtorization failed
+    // Test patients/register route
     describe('/GET patients/register', () => {
-        let patient = {
+        let patientIncorrect = {
             phone_number: 9999999999,
-            name: "New Patient"
         }
+
+        let patientCorrect = {
+            name: "New Patient",
+            phone_number: "9999999999"
+        };
+
+        // Register patients auhtorization failed
         it('it should return an error with message saying not authorized to create patient as jwt not send -> REGISTER PATIENT', (done) => {
             chai.request(server)
                 .post('/api/v1/patients/register')
                 .set('content-type', 'application/x-www-form-urlencoded')
-                .send(patient)
+                .send(patientCorrect)
                 .end((err, res) => {
                     // console.log(res.body);
                     res.should.have.status(401);
@@ -61,20 +62,14 @@ describe('Patients', () => {
                     done();
                 });
         });
-    });
 
-
-    // Registration of Patient failed because of missing data field
-    describe('/GET patients/register', () => {
-        let patient = {
-            phone_number: 9999999999,
-        }
-        it('it should return an error with message saying internal server error -> REGISTER PATIENT', (done) => {
+        // Registration of Patient failed because of missing data field.
+        it('it should return an error with message saying internal server error because of missing data field  -> REGISTER PATIENT', (done) => {
             chai.request(server)
                 .post('/api/v1/patients/register')
                 .set('content-type', 'application/x-www-form-urlencoded')
                 .set({ "Authorization": `Bearer ${authToken}` })
-                .send(patient)
+                .send(patientIncorrect)
                 .end((err, res) => {
                     // console.log(res.body);
                     res.should.have.status(500);
@@ -84,22 +79,14 @@ describe('Patients', () => {
                     done();
                 });
         });
-    });
 
-    // Register patients Success
-    describe('/GET patients/register', () => {
-
-        let patient = {
-            name: "New Patient",
-            phone_number: "9999999999"
-        };
-
+        // Register patients Success
         it('it should create a patient -> REGISTER PATIENT', (done) => {
             chai.request(server)
                 .post('/api/v1/patients/register')
                 .set('content-type', 'application/x-www-form-urlencoded')
                 .set({ "Authorization": `Bearer ${authToken}` })
-                .send(patient)
+                .send(patientCorrect)
                 .end((err, res) => {
                     // console.log(res.body);
                     res.should.have.status(200);
@@ -118,11 +105,16 @@ describe('Patients', () => {
 
 
 
-    // Create report authorization failed
+
+
+
+    // Test patients/id/create_report route
     describe('/GET patients/id/create_report', () => {
         let report = {
             status: "N"
         }
+
+        // Create report authorization failed
         it('it should return an error with message saying not authorized TO GENERATE REPORT bcz jwt not provided -> create report', (done) => {
             chai.request(server)
                 .post('/api/v1/patients/21232/create_report')
@@ -139,13 +131,8 @@ describe('Patients', () => {
                     done();
                 });
         });
-    });
 
-    // Create report authorization send but patient id incorrect.
-    describe('/GET patients/id/create_report', () => {
-        let report = {
-            status: "N"
-        }
+        // Create report authorization send but patient id incorrect.
         it('it should return an error with message saying patient id incorrect -> create report', (done) => {
             chai.request(server)
                 .post('/api/v1/patients/45353/create_report')
@@ -163,11 +150,8 @@ describe('Patients', () => {
                     done();
                 });
         });
-    });
 
-    // Create report and authorization send and patient id correct but status incorrect.
-    describe('/GET patients/id/create_report', () => {
-
+        // Create report and authorization send and patient id correct but status incorrect.
         it('it should throw error saying status incorrect -> create report', (done) => {
 
             let patient = new Patient({ phone_number: "9999999999", name: "New patient" });
@@ -190,12 +174,8 @@ describe('Patients', () => {
             });
 
         });
-    });
 
-
-    // Create report sucess
-    describe('/GET patients/id/create_report', () => {
-
+        // Create report sucess
         it('it should create report -> create report', (done) => {
 
             let patient = new Patient({ phone_number: "9999999999", name: "New patient" });
@@ -229,12 +209,16 @@ describe('Patients', () => {
             });
 
         });
+
+
     });
 
 
 
-    // All reports patient id incorrect
+    // TEST patients/id/all_reports
     describe('/GET patients/id/all_reports', () => {
+
+        // All reports patient id incorrect
         it('it should return an error with message saying patient id incorrect -> ALL REPORTS', (done) => {
             chai.request(server)
                 .get('/api/v1/patients/213213/all_reports')
@@ -249,10 +233,8 @@ describe('Patients', () => {
                     done();
                 });
         });
-    });
 
-    // All reports patient id correct
-    describe('/GET patients/id/all_reports', () => {
+        // All reports patient id correct
         it('it should send all reports of new patient -> ALL REPORTS', (done) => {
             let patient = new Patient({ phone_number: "9999999999", name: "New patient" });
 
