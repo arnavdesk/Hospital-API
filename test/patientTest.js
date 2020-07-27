@@ -40,7 +40,7 @@ describe('Patients', () => {
 
 
     // Test patients/register route
-    describe('/GET patients/register', () => {
+    describe('/POST patients/register', () => {
         let patientIncorrect = {
             phone_number: 9999999999,
         }
@@ -114,7 +114,7 @@ describe('Patients', () => {
 
 
     // Test patients/id/create_report route
-    describe('/GET patients/id/create_report', () => {
+    describe('/POST patients/:id/create_report', () => {
         let report = {
             status: "N"
         }

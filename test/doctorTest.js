@@ -20,7 +20,7 @@ describe('Doctor', () => {
         });
     });
 
-    describe('/doctor/register', () => {
+    describe('/POST /doctor/register', () => {
         const doctorIncorrect = { username: "DummyDoc", password: "dummyPass", "confirm-password": "dummyPass" }
 
         const doctorWrongConfirmPass = { name: "Dr. Dummy", username: "DummyDoc", password: "dummyPass", "confirm-password": "dummyPass123" }
@@ -86,7 +86,7 @@ describe('Doctor', () => {
 
 
     // All tests for login route
-    describe('/doctor/login', () => {
+    describe('/POST /doctor/login', () => {
 
         // unable to login because of wrong username
         it('it should say authorization failed because wrong doctor username -> login doctor', (done) => {
