@@ -23,7 +23,6 @@ describe('Patients', () => {
         Doctor.remove({},(err)=>{
             let doctor = new Doctor({name:"Dr. Dummy",username:"DummyDoc",password:"dummyPass","confirm-password":"dummyPass"});
             doctor.save((err,doctor)=>{
-                console.log(doctor);
                 authToken = jwt.sign(doctor.toJSON(), "codeial", { expiresIn: 100000 })
                 done();
             })
