@@ -1,6 +1,10 @@
 const express = require("express");
+const config = require("config");
 const app = express();
-const port = 8000;
+let port = 8000;
+if (config.util.getEnv("NODE_ENV") === "test") {
+    port = 6000;
+}
 
 // read request
 app.use(express.urlencoded());
@@ -31,3 +35,5 @@ app.listen(port, function (err) {
         console.log(`server is running on ${port}`);
     }
 })
+
+module.exports = app;

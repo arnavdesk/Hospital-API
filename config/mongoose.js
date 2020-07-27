@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
+const config = require("config");
 
-mongoose.connect("mongodb://localhost/Hospita_db_development");
+if (config.util.getEnv("NODE_ENV") !== "test") {
+    mongoose.connect("mongodb://localhost/Hospita_db_development");
+}
+else {
+    mongoose.connect("mongodb://localhost/Hospita_db_test");
+}
 
 const db = mongoose.connection;
 

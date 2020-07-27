@@ -29,7 +29,7 @@ passport.use(new jwtStrategy(opts, function (jwtPayload, done) {
             } else {
                 request.code = 401;
                 request.info = "Authorization failed! Invalid Authorization key or Doctor Doesn't exits!!"
-                return done(null, flase);
+                return done(null, false);
             }
         }
     })
