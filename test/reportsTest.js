@@ -1,38 +1,53 @@
-// process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'test';
 
-// let mongoose = require("mongoose");
-// let Report = require('../models/report');
+let mongoose = require("mongoose");
+let Report = require('../models/report');
+let chai = require('chai');
+let chaiHttp = require('chai-http');
+let server = require('../index');
+let should = chai.should();
 
-// let chai = require('chai');
-// let chaiHttp = require('chai-http');
-// let server = require('../index');
-// let should = chai.should();
 
+chai.use(chaiHttp);
 
-// chai.use(chaiHttp);
+describe('Reports', () => {
+    beforeEach((done) => {
+        Report.remove({}, (err) => {
+            done();
+        });
+    });
 
-// describe('All Reports', () => {
-//     beforeEach((done) => {
-//         Report.remove({}, (err) => {
-//             done();
-//         });
-//     });
+    describe('/GET reports/:status', () => {
 
-//     describe('/GET All Reports', () => {
-//         it('it should GET all reports', (done) => {
-//             chai.request(server)
-//                 .get('/api/v1/reports/N')
-//                 .end((err, res) => {
-//                     console.log(res.body);
-//                     res.should.have.status(200);
-//                     res.body.should.be.a('object');
-//                     res.body.should.have.property('data');
-//                     res.body.data.should.be.a('object');
-//                     res.body.data.should.have.property('reports');
-//                     res.body.data.reports.should.be.a('array');
-//                     res.body.data.reports.length.should.eql(0);
-//                     done();
-//                 });
-//         });
-//     });
-// });
+        // Get all the reports of a particular Status
+        it('it should GET all reports -> reports/:status', (done) => {
+            chai.request(server)
+                .get('/api/v1/reports/N')
+                .end((err, res) => {
+                    console.log(res.body);
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('data');
+                    res.body.data.should.be.a('object');
+                    res.body.data.should.have.property('reports');
+                    res.body.data.reports.should.be.a('array');
+                    res.body.data.reports.length.should.eql(0);
+                    done();
+                });
+        });
+
+        // Should throw error saying incorrect status
+        it('it should throw an error saying cannot get reports because incorrect status : -> /reports/:status', (done) => {
+            chai.request(server)
+                .get('/api/v1/reports/L')
+                .end((err, res) => {
+                    console.log(res.body);
+                    res.should.have.status(500);
+                    res.body.should.have.property("status");
+                    res.body.should.have.property("message");
+                    res.body.message.should.be.eql("Please enter the correct status");
+                    done();
+                });
+        });
+    });
+});

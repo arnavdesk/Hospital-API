@@ -16,9 +16,13 @@ const jwt = require("jsonwebtoken");
 const should = chai.should();
 chai.use(chaiHttp);
 
+
+// Test for all the patients will come under this.
 describe('Patients', () => {
     let authToken = "";
     let doctor = "";
+
+    // Empty all the collections and add a dummy doctor to generate jwt
     beforeEach((done) => {
         Patient.remove({}, (err) => {
         });
@@ -31,11 +35,6 @@ describe('Patients', () => {
                 done();
             })
         });
-
-        // Doctor.findOne({username:"DummyDoc",password:"dummyPass"},(err,doctor)=>{
-        //     authToken = jwt.sign(doctor.toJSON(), "codeial", { expiresIn: 100000 })
-        // });
-
     });
 
 
@@ -267,6 +266,7 @@ describe('Patients', () => {
             });
         });
 
+        // Get all reports including a new report created.
         it('it should send all reports of new patient which should contain 1 newly created report -> ALL REPORTS', (done) => {
             let patient = new Patient({ phone_number: "9999999999", name: "New patient" });
 
@@ -274,7 +274,7 @@ describe('Patients', () => {
                 let report = new Report({ doctor: doctor._id, patient: patient._id, status: "Negative" });
                 report.save((err, report) => {
                     console.log(report);
-                    // patient.reports.push(report._id);
+                    patient.reports.push(report._id);
                     chai.request(server)
                         .get('/api/v1/patients/' + patient.phone_number + '/all_reports')
                         .end((err, res) => {
