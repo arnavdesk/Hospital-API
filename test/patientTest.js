@@ -1,24 +1,43 @@
 process.env.NODE_ENV = 'test';
 
-let mongoose = require("mongoose");
-let Patient = require('../models/patient');
+const mongoose = require("mongoose");
+const Patient = require('../models/patient');
 
-let chai = require('chai');
-let chaiHttp = require('chai-http');
-let server = require('../index');
-let should = chai.should();
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const server = require('../index');
+const Doctor = require("../models/doctor");
+const jwt = require("jsonwebtoken");
+const should = chai.should();
 
 
 chai.use(chaiHttp);
 
 describe('Patients', () => {
+    let authToken = "";
+
     beforeEach((done) => {
         Patient.remove({}, (err) => {
-            done();
         });
+
+        Doctor.remove({},(err)=>{
+            let doctor = new Doctor({name:"Dr. Dummy",username:"DummyDoc",password:"dummyPass","confirm-password":"dummyPass"});
+            doctor.save((err,doctor)=>{
+                console.log(doctor);
+                authToken = jwt.sign(doctor.toJSON(), "codeial", { expiresIn: 100000 })
+                done();
+            })
+        });
+
+        // Doctor.findOne({username:"DummyDoc",password:"dummyPass"},(err,doctor)=>{
+        //     authToken = jwt.sign(doctor.toJSON(), "codeial", { expiresIn: 100000 })
+        // });
+
     });
 
-    let authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjFlMTA1YmI5YTQ3NmZjOTg4MmQwZTAiLCJuYW1lIjoiRHIuRG9jdG9yIiwidXNlcm5hbWUiOiJkb2MwMDciLCJwYXNzd29yZCI6ImRvY3RvciIsImNyZWF0ZWRBdCI6IjIwMjAtMDctMjZUMjM6MjM6MDcuNzA2WiIsInVwZGF0ZWRBdCI6IjIwMjAtMDctMjZUMjM6MjM6MDcuNzA2WiIsIl9fdiI6MCwiaWF0IjoxNTk1ODA1ODI4LCJleHAiOjE1OTU5MDU4Mjh9.m238ISuXebPEbQtsK0qh-iKUMPP2Tl-_IlB-YphWYLo";
+    
+
+    console.log(authToken);
 
 
     // Register patients auhtorization failed
@@ -147,30 +166,30 @@ describe('Patients', () => {
         });
     });
 
-    // Create report authorization send but patient id correct but status incorrect.
+    // Create report and authorization send and patient id correct but status incorrect.
     describe('/GET patients/id/create_report', () => {
 
         it('it should throw error saying status incorrect -> create report', (done) => {
 
-            let patient = new Patient({phone_number:"9999999999",name:"New patient"});
-            patient.save((err,patient)=>{
+            let patient = new Patient({ phone_number: "9999999999", name: "New patient" });
+            patient.save((err, patient) => {
                 chai.request(server)
-                .post('/api/v1/patients/'+patient.phone_number+'/create_report')
-                .set('content-type', 'application/x-www-form-urlencoded')
-                .set({ "Authorization": `Bearer ${authToken}` })
-                .send({status:"N"})
-                .end((err, res) => {
-                    // console.log(res.body);
-                    res.should.have.status(500);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('status');
-                    res.body.should.have.property('message');
-                    res.body.status.should.be.eql(500);
-                    res.body.message.should.be.eql("Please enter the correct status");
-                    done();
-                });
+                    .post('/api/v1/patients/' + patient.phone_number + '/create_report')
+                    .set('content-type', 'application/x-www-form-urlencoded')
+                    .set({ "Authorization": `Bearer ${authToken}` })
+                    .send({ status: "L" })
+                    .end((err, res) => {
+                        // console.log(res.body);
+                        res.should.have.status(500);
+                        res.body.should.be.a('object');
+                        res.body.should.have.property('status');
+                        res.body.should.have.property('message');
+                        res.body.status.should.be.eql(500);
+                        res.body.message.should.be.eql("Please enter the correct status");
+                        done();
+                    });
             });
-            
+
         });
     });
 
@@ -180,36 +199,36 @@ describe('Patients', () => {
 
         it('it should create report -> create report', (done) => {
 
-            let patient = new Patient({phone_number:"9999999999",name:"New patient"});
+            let patient = new Patient({ phone_number: "9999999999", name: "New patient" });
 
-            patient.save((err,patient)=>{
+            patient.save((err, patient) => {
                 chai.request(server)
-                .post('/api/v1/patients/'+patient.phone_number+'/create_report')
-                .set('content-type', 'application/x-www-form-urlencoded')
-                .set({ "Authorization": `Bearer ${authToken}` })
-                .send({status:"N"})
-                .end((err, res) => {
-                    // console.log(res.body);
-                    res.should.have.status(200);
-                    res.body.should.have.property('status');
-                    res.body.should.have.property('message');
-                    res.body.status.should.be.eql(200);
-                    res.body.message.should.be.eql('Report Generation Sucess!');
-                    res.body.should.have.property('data');
-                    res.body.data.should.be.a('object')
-                    res.body.data.should.have.property('report');
-                    res.body.data.report.should.be.a('object')
-                    res.body.data.report.should.have.property('patient');
-                    res.body.data.report.should.have.property('doctor');
-                    res.body.data.report.should.have.property('status');
-                    res.body.data.report.status.should.be.eql("Negative")
-                    res.body.data.report.doctor.should.have.property('name');
-                    res.body.data.report.patient.should.have.property('name');
-                    res.body.data.report.patient.should.have.property('phone_number');
-                    done();
-                });
+                    .post('/api/v1/patients/' + patient.phone_number + '/create_report')
+                    .set('content-type', 'application/x-www-form-urlencoded')
+                    .set({ "Authorization": `Bearer ${authToken}` })
+                    .send({ status: "N" })
+                    .end((err, res) => {
+                        // console.log(res.body);
+                        res.should.have.status(200);
+                        res.body.should.have.property('status');
+                        res.body.should.have.property('message');
+                        res.body.status.should.be.eql(200);
+                        res.body.message.should.be.eql('Report Generation Sucess!');
+                        res.body.should.have.property('data');
+                        res.body.data.should.be.a('object')
+                        res.body.data.should.have.property('report');
+                        res.body.data.report.should.be.a('object')
+                        res.body.data.report.should.have.property('patient');
+                        res.body.data.report.should.have.property('doctor');
+                        res.body.data.report.should.have.property('status');
+                        res.body.data.report.status.should.be.eql("Negative")
+                        res.body.data.report.doctor.should.have.property('name');
+                        res.body.data.report.patient.should.have.property('name');
+                        res.body.data.report.patient.should.have.property('phone_number');
+                        done();
+                    });
             });
-            
+
         });
     });
 
@@ -217,7 +236,7 @@ describe('Patients', () => {
 
     // All reports patient id incorrect
     describe('/GET patients/id/all_reports', () => {
-        it('it should return an error with message saying patient id incorrect', (done) => {
+        it('it should return an error with message saying patient id incorrect -> ALL REPORTS', (done) => {
             chai.request(server)
                 .get('/api/v1/patients/213213/all_reports')
                 .end((err, res) => {
@@ -233,8 +252,22 @@ describe('Patients', () => {
         });
     });
 
+    // All reports patient id correct
+    describe('/GET patients/id/all_reports', () => {
+        it('it should send all reports of new patient -> ALL REPORTS', (done) => {
+            let patient = new Patient({ phone_number: "9999999999", name: "New patient" });
 
+            patient.save((err, patient) => {
+                chai.request(server)
+                    .get('/api/v1/patients/' + patient.phone_number + '/all_reports')
+                    .end((err, res) => {
+                        // console.log(res.body);
+                        res.should.have.status(200);
+                        done();
+                    });
+            });
+        });
 
-
+    });
 
 });
